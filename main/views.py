@@ -5,7 +5,62 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 
-from .forms import RegistrationForm
+from .forms import RegistrationForm, dayForm
+
+# home page
+def index(request):
+    user = request.user
+    context = {'user':user}
+    return render(request, 'main/index.html', context)
+
+# dates are buttons which let you access that day's form
+def calendar(request):
+    pass
+
+def day_report(request, day=None):
+    if request.user.is_authenticated:
+        user = request.user
+        if request.method == "POST":
+            form = dayForm(request.POST)
+            if form.is_valid():
+                # process form.cleaned_data
+                form.save()
+            return HttpResponseRedirect('main/results.html')
+        else:
+            if day == None:
+                form = dayForm()
+            else:
+
+        return render(request, 'main/survey.html', context={'user':user, 'form':form})
+    
+
+def month_report(request):
+    pass
+
+def year_report(request):
+    pass
+
+# displays day form, with filled-in values if already submitted
+def day_form(request):
+    pass
+
+def results(request):
+    pass
+
+# table with existing assets and recurring
+# link to crud assets
+# link to crud recurring
+# delete button on each
+def profile(request):
+    pass
+
+# displays form (populated if edit) to create an asset or recurring item
+def assetsRecurringForm(request):
+    pass
+
+# edit username, pw, email
+def account(request):
+    pass
 
 def login(request):
     if not request.user.is_authenticated:
@@ -50,8 +105,3 @@ def logout(request):
     if request.user.is_authenticated:
         auth_logout(request)
     return redirect("login")
-
-def index(request):
-    user = request.user
-    context = {'user':user}
-    return render(request, 'main/index.html', context)
