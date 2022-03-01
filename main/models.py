@@ -30,7 +30,7 @@ class recurring(models.Model):
         ('Income', 'Income'),
     ]
     name = models.CharField(max_length=50)
-    category = models.CharField(choices=categories)
+    category = models.CharField(max_length=50, choices=categories)
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     duration = models.IntegerField()
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
