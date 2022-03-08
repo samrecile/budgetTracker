@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.forms import UserCreationForm
 
 from .forms import RegistrationForm, dayForm
 
@@ -151,8 +152,7 @@ def register(request):
                 return redirect("index")
         else:
             form = RegistrationForm()
-            context = {"form": form}
-        return render(request, 'registration/register.html', context)
+        return render(request, 'registration/register.html', {"form": form})
     else:
         return redirect("index")
 

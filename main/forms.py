@@ -28,6 +28,8 @@ class RegistrationForm(UserCreationForm):
         
         return User
 
+
+
 class dayForm(ModelForm):
     class Meta:
         model = daily

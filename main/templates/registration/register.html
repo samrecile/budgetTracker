@@ -7,12 +7,12 @@
 
     <div class="d-flex justify-content-center">
 
-        <form method="post" autocomplete="off" action="{% url "register" %}" >
+        <form method="POST" autocomplete="off" action="{% url "register" %}" >
 
             {% csrf_token %}
-            {{ form | crispy}}
+            {{ form|crispy}}
 
-            <input type="submit" class="btn btn-success" value="Register">
+            <button type="submit" class="btn btn-success" value="Register">Submit</button>
 
         </form>
     </div>
