@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,7 +8,8 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import UserCreationForm
 
-from .forms import RegistrationForm, dayForm
+from .models import daily, recurring, asset
+from .forms import RegistrationForm, dailyForm
 
 # home page
 @login_required(login_url='/login/')
@@ -21,22 +22,30 @@ def index(request):
 @login_required(login_url='/login/')
 def calendar(request):
     context = {}
-    thirty = [4, 6, 9, 11]
-    thirty_one = [1, 3, 5, 7, 8, 10, 12]
+    thirty = ['04', '06', '09', 11]
+    thirty_one = ['01', '03', '05', '07', '08', 10, 12]
     currentMonth = date.today().month
     currentYear = date.today().year
+    if currentMonth < 10:
+        currentMonth = '0' + str(currentMonth)
     # if 30 day month
     if currentMonth in thirty:
         dateList = []
         count = 30
         for x in range(count):
-            dateList.append('{day}-{month}-{year}'.format(day=x, month=currentMonth, year=currentYear))
+            x += 1
+            if x < 10:
+                x = '0' + str(x)
+            dateList.append('{year}-{month}-{day}-'.format(day=x, month=currentMonth, year=currentYear))
     # if 31 day month
     elif currentMonth in thirty_one:
         dateList = []
         count = 31
         for x in range(count):
-            dateList.append('{day}-{month}-{year}'.format(day=x, month=currentMonth, year=currentYear))
+            x += 1
+            if x < 10:
+                x = '0' + str(x)
+            dateList.append('{year}-{month}-{day}'.format(day=x, month=currentMonth, year=currentYear))
     # if february year
     else:
         dateList = []
@@ -46,41 +55,39 @@ def calendar(request):
         else:
             count = 28
         for x in range(count):
-            dateList.append('{day}-2-{year}'.format(day=x, year=currentYear))
+            x += 1
+            if x < 10:
+                x = '0' + str(x)
+            dateList.append('{year}-02-{day}'.format(day=x, year=currentYear))
     context["dates"] = dateList
     return render(request, 'main/calendar.html', context)
 
 @login_required(login_url='/login/')
-# day_form returns a day form from a specific date if POST method
+# day_form returns a day form from a specific date
 # or renders a new form for today
-def dayForm(request):#, date=None):
+def dayForm(request, formDate=str(date.today())):
+    templateDate = formDate
+    formDate = str(formDate)
+    form_date = datetime.fromisoformat(formDate).date()
+    if form_date < date.today():
+        redirect('calendar')
     user = request.user
-    context = {"user": user}
+    context = {"user": user, "date": templateDate}
     if request.method == "POST":
-        form = dayForm(request.POST)
+        form = dailyForm(request.POST)
         if form.is_valid():
             # process form.cleaned_data
             form.save()
         return HttpResponseRedirect('main/results.html')
     else:
-        form = dayForm()
-        context = {"form": form}
-        #if date:
-            
-        #else:
+        try:
+            day = daily.objects.get(date=form_date)
+            form = dailyForm(instance=day)
+            context['form'] = form
+        except:
+            form = dailyForm()
+            context['form'] = form
     return render(request, 'main/dailyForm.html', context)
-
-def saveForm(request):
-    user = request.user
-    context = {"user": user}
-    if request.method == "POST":
-        form = dayForm(request.POST)
-        if form.is_valid():
-            # process form.cleaned_data
-            form.save()
-        return HttpResponseRedirect('main/results.html')
-    else:
-        return redirect('/')
 
 
 @login_required(login_url='/login/')

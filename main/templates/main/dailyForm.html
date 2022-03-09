@@ -4,8 +4,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h2>Form</h2>
-    <form method="POST" action="{% url 'saveForm' %}" class="form-group">
+    <h2>{{date}} Form</h2>
+    <form method="POST" action="{% url 'dayForm' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>

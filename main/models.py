@@ -22,7 +22,7 @@ class daily(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
-        return str(self.userId + ' - ' + self.date)
+        return (str(self.userId) + ' - ' + str(self.date))
 
 class recurring(models.Model):
     categories = [

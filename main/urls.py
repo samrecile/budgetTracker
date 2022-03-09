@@ -8,5 +8,5 @@ urlpatterns = [
     path("logout/", views.logout, name="logout"),
     path('calendar/', views.calendar, name='calendar'),
     path('day_form/', views.dayForm, name='dayForm'),
-    path('save_form/', views.saveForm, name='saveForm')
+    path('day_form/<str:formDate>/', views.dayForm, name='dayForm'),
 ]

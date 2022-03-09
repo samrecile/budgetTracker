@@ -5,10 +5,6 @@
 
 {% block content %} 
     {% for date in dates %}
-        <form action="{% url 'dayForm' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="value" value="{{date}}" readonly/>
-            <button type="submit" id='dateSubmission' class="btn btn-secondary">{{date}}</button>
-        </form>
+        <button type="submit" id='dateSubmission' class="btn btn-secondary"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
     {% endfor %}
 {% endblock %}

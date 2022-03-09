@@ -30,7 +30,7 @@ class RegistrationForm(UserCreationForm):
 
 
 
-class dayForm(ModelForm):
+class dailyForm(ModelForm):
     class Meta:
         model = daily
         fields = ['income', 'restExp', 'grocExp', 'gasExp', 'uberExp', 'alcExp', 'barberExp', 'barExp', 'discExp', 'stockExp', 'cryptoExp', 'debtExp']
