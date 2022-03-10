@@ -42,6 +42,7 @@ class asset(models.Model):
     name = models.CharField(max_length=50)
     value = models.DecimalField(max_digits=8, decimal_places=2)
     depreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True)
+    appreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True)
     acquisition_date = models.DateField(auto_now_add=True)
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
 

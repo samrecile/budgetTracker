@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}A&L Form{% endblock %} 
+{% load crispy_forms_tags %}
+
+{% block content %} 
+    <h2>{{date}} Form</h2>
+    <form method="POST" action="{% url 'dayForm' %}" class="form-group">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+{% endblock %}

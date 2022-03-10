@@ -4,7 +4,14 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
+    <h1>{{templateMonth}}</h1>
     {% for date in dates %}
         <button type="submit" id='dateSubmission' class="btn btn-secondary"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
     {% endfor %}
+
+    <form method="POST" action="{% url 'changeMonth' %}" class="form-group">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
 {% endblock %}
