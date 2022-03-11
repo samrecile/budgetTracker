@@ -9,6 +9,7 @@
         <button type="submit" id='dateSubmission' class="btn btn-secondary"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
     {% endfor %}
 
+    <p>View a different month:</p>
     <form method="POST" action="{% url 'changeMonth' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}

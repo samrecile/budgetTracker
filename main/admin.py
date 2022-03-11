@@ -5,3 +5,8 @@ from main.models import daily, recurring, asset
 admin.site.register(daily)
 admin.site.register(recurring)
 admin.site.register(asset)
+
+class modelAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)

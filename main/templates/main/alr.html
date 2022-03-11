@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{% endblock %} 
+{% load crispy_forms_tags %}
+
+{% block content %} 
+    <a href="{% url 'changeAsset' %}">Add New Asset</a>
+    <a href="{% url 'changeRecurring' %}">Add New Recurring Item</a>
+    <a href="{% url 'changeLiability'%}">Add New Liability</a>
+{% endblock %}

@@ -10,8 +10,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
-from .models import daily, recurring, asset
-from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm
+from .models import daily, recurring, asset, liability
+from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm, liabilitiesForm
 
 # home page
 @login_required(login_url='/login/')
@@ -101,8 +101,12 @@ def dayForm(request, formDate=str(date.today())):
     if request.method == "POST":
         form = dailyForm(request.POST)
         if form.is_valid():
-            # process form.cleaned_data
-            form.save()
+            # create form instance w form.cleaned_data
+            formInstance = form.save(commit=False)
+            # populate form with user 
+            formInstance.userId = request.user
+            # save form
+            formInstance.save()
         return HttpResponseRedirect('main/results.html')
     # display form
     else:
@@ -128,16 +132,85 @@ def results(request):
 # delete button on each
 @login_required(login_url='/login/')
 def assetsLiabilities(request):
-    pass
+    context = {}
+    user = request.user
+    assets = asset.objects.filter(userId=user)
+    liabilities = liability.objects.filter(userId=user)
+    recurringItems = recurring.objects.filter(userId=user)
+    context = {"assets":assets, "liabilities":liabilities, "recurring":recurring}
+    return render(request, 'main/alr.html', context)
 
 @login_required(login_url='/login/')
-def alForm(request):
-    pass
+def changeAsset(request, form_date=None):
+    context = {}
+    if request.method == "POST":
+        form = assetForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            formInstance = form.save(commit=False)
+            # populate form with user 
+            formInstance.userId = request.user
+            # save form
+            formInstance.save()
+        return redirect('A&L')
+    else:
+        try:
+        # passes form with existing instance data
+            previousForm = asset.objects.get(date=form_date)
+            form = assetForm(instance=previousForm)
+            context['form'] = form
+        except:
+            form = assetForm()
+            context['form'] = form
+    return render(request, 'main/assetForm.html', context)
 
-# displays form (populated if edit) to create an asset or recurring item
 @login_required(login_url='/login/')
-def assetsRecurringForm(request):
-    pass
+def changeLiability(request, form_date=None):
+    context = {}
+    if request.method == "POST":
+        form = liabilitiesForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            fformInstance = form.save(commit=False)
+            # populate form with user 
+            formInstance.userId = request.user
+            # save form
+            formInstance.save()
+        return redirect('A&L')
+    else:
+        try:
+        # passes form with existing instance data
+            previousForm = liability.objects.get(date=form_date)
+            form = liabilitiesForm(instance=previousForm)
+            context['form'] = form
+        except:
+            form = liabilitiesForm()
+            context['form'] = form        
+    return render(request, 'main/liabilitiesForm.html', context)
+
+@login_required(login_url='/login/')
+def changeRecurring(request, form_date=None):
+    context = {}
+    if request.method == "POST":
+        form = recurringForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            formInstance = form.save(commit=False)
+            # populate form with user 
+            formInstance.userId = request.user
+            # save form
+            formInstance.save()
+        return redirect('A&L')
+    else:
+        try:
+        # passes form with existing instance data
+            previousForm = recurring.objects.get(date=form_date)
+            form = recurringForm(instance=previousForm)
+            context['form'] = form
+        except:
+            form = recurringForm()
+            context['form'] = form
+    return render(request, 'main/recurringForm.html', context)
 
 # edit username, pw, email
 @login_required(login_url='/login/')

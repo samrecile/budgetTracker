@@ -19,7 +19,7 @@ class daily(models.Model):
     stockExp = models.DecimalField(max_digits=8, decimal_places=2)
     cryptoExp = models.DecimalField(max_digits=8, decimal_places=2)
     debtExp = models.DecimalField(max_digits=8, decimal_places=2)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     
     def __str__(self):
         return (str(self.userId) + ' - ' + str(self.date))
@@ -32,8 +32,7 @@ class recurring(models.Model):
     name = models.CharField(max_length=50)
     category = models.CharField(max_length=50, choices=categories)
     cost = models.DecimalField(max_digits=8, decimal_places=2)
-    duration = models.IntegerField()
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
         return str(self.name)
@@ -41,10 +40,21 @@ class recurring(models.Model):
 class asset(models.Model):
     name = models.CharField(max_length=50)
     value = models.DecimalField(max_digits=8, decimal_places=2)
-    depreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True)
-    appreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True)
+    depreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True, default=0)
+    appreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True, default=0)
     acquisition_date = models.DateField(auto_now_add=True)
-    userId = models.ForeignKey(User, on_delete=models.CASCADE)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return str(self.name)
+
+class liability(models.Model):
+    name = models.CharField(max_length=50)
+    value = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    interest = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    payment = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    userId = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    date_added = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return str(self.name)

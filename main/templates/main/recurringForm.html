@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}New Asset Form{% endblock %} 
+{% block title %}New Recurring Item Form{% endblock %} 
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h2>Asset Form</h2>
-    <form method="POST" action="{% url 'changeAsset' %}" class="form-group">
+    <h2>Recurring Form</h2>
+    <form method="POST" action="{% url 'changeRecurring' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>

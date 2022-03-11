@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}A&L Form{% endblock %} 
+{% block title %}New Liability Form{% endblock %} 
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h2>{{date}} Form</h2>
-    <form method="POST" action="{% url 'dayForm' %}" class="form-group">
+    <h2>Liability Form</h2>
+    <form method="POST" action="{% url 'changeLiability' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>
