@@ -17,7 +17,15 @@ from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recu
 @login_required(login_url='/login/')
 def index(request):
     user = request.user
-    context = {'user':user}
+    assets = asset.objects.all()
+    liabilities = liability.objects.filter(userId=user)
+    recurringItems = recurring.objects.filter(userId=user)
+    netWorth = 0
+    context = {"user": user, "assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
+    for asset in assets:
+        netWorth += asset.value 
+    for liability in liabilities:
+        netWorth -= liability.value
     return render(request, 'main/index.html', context)
 
 # list of buttons that send you to a day form
@@ -132,12 +140,12 @@ def results(request):
 # delete button on each
 @login_required(login_url='/login/')
 def assetsLiabilities(request):
-    context = {}
     user = request.user
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
     recurringItems = recurring.objects.filter(userId=user)
-    context = {"assets":assets, "liabilities":liabilities, "recurring":recurring}
+    netWorth = 0
+    context = {"assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
     return render(request, 'main/alr.html', context)
 
 @login_required(login_url='/login/')
@@ -171,7 +179,7 @@ def changeLiability(request, form_date=None):
         form = liabilitiesForm(request.POST)
         if form.is_valid():
             # create form instance w form.cleaned_data
-            fformInstance = form.save(commit=False)
+            formInstance = form.save(commit=False)
             # populate form with user 
             formInstance.userId = request.user
             # save form

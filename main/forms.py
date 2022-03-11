@@ -38,17 +38,6 @@ class dailyForm(ModelForm):
         #    "mainInc": "How much money did you make from your main job?", "otherInc":"How much other income did you make?", "gasExp":"How much did you spend on gas?", "uberExp":"How much did you spend on Ubers?", "grocExp":"How much did you spend on groceries?", "restExp":"How much did you spend at restaurants?", "alcExp":"How much did you spend on alcohol?", "personalExp":"How much did you spend on personal expenses (toiletries, etc.)?", "barberExp": "How much did you spend on haircuts?", "barExp":"How much did you spend at bars?", "nightExp":"How much did you spend on other nights out?", "discExp":"How much did you spend on other discretionary expenses (clothes, games)?", "stockExp":"How much did you invest in stocks?", "cryptoExp":"How much did you invest in crypto?", "debtExp": "How much debt did you pay down?",
         #}
 
-        def __init__(self, *args, **kwargs):
-            self.request = kwargs.pop('request', None)
-            return super(dailyForm, self).__init__(*args, **kwargs)
-
-        def save(self, *args, **kwargs):
-            kwargs['commit']=False
-            obj = super(dailyForm, self).save(*args, **kwargs)
-            if self.request:
-                obj.user = self.request.user
-                obj.save()
-            return obj
 
 class changeMonthForm(forms.Form):
     month_choices = [

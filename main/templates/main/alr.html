@@ -4,7 +4,18 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
+    <h3>Net Worth: {{netWorth}}</h3>
     <a href="{% url 'changeAsset' %}">Add New Asset</a>
     <a href="{% url 'changeRecurring' %}">Add New Recurring Item</a>
     <a href="{% url 'changeLiability'%}">Add New Liability</a>
+
+    {% for asset in assets %}
+        <p>{{asset.value}}</p>
+    {% endfor %}
+    {% for liability in liabilities %}
+        <p>{{liability.value}}</p>
+    {% endfor %}
+    {% for recurring in recurringItems %}
+        <p>{{recurring.cost}}</p>
+    {% endfor %}
 {% endblock %}
