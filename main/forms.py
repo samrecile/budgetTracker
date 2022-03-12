@@ -28,6 +28,10 @@ class RegistrationForm(UserCreationForm):
         
         return User
 
+class profileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['cash']
 
 
 class dailyForm(ModelForm):
@@ -66,7 +70,7 @@ class assetForm(ModelForm):
 class recurringForm(ModelForm):
     class Meta:
         model = recurring
-        fields = ['name', 'category', 'cost']
+        fields = ['name', 'category', 'value']
         
 
 class liabilitiesForm(ModelForm):

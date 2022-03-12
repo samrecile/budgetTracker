@@ -10,22 +10,23 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
-from .models import daily, recurring, asset, liability
-from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm, liabilitiesForm
+from .models import daily, recurring, asset, liability, Profile
+from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm, liabilitiesForm, profileForm
 
 # home page
 @login_required(login_url='/login/')
 def index(request):
     user = request.user
-    assets = asset.objects.all()
+    netWorth = 0
+    assetList = []
+    assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
     recurringItems = recurring.objects.filter(userId=user)
-    netWorth = 0
+    for assetval in assets:
+        netWorth += assetval.value
+    for liaVal in liabilities:
+        netWorth -= liaVal.value
     context = {"user": user, "assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
-    for asset in assets:
-        netWorth += asset.value 
-    for liability in liabilities:
-        netWorth -= liability.value
     return render(request, 'main/index.html', context)
 
 # list of buttons that send you to a day form
@@ -141,11 +142,15 @@ def results(request):
 @login_required(login_url='/login/')
 def assetsLiabilities(request):
     user = request.user
+    profile = Profile.objects.get(userId=user)
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
     recurringItems = recurring.objects.filter(userId=user)
     netWorth = 0
-    context = {"assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
+    assetTotal = profile.cash
+    for assetItem in assets:
+        assetTotal += assetItem.value
+    context = {"assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "profile":profile, "netWorth": netWorth, "assetTotal":assetTotal}
     return render(request, 'main/alr.html', context)
 
 @login_required(login_url='/login/')
@@ -225,6 +230,24 @@ def changeRecurring(request, form_date=None):
 def account(request):
     pass
 
+@login_required(login_url='/login/')
+def profileView(request):
+    try:
+        Profile.objects.get(userId=request.user)
+        return redirect("index")
+    except:
+        if request.method == "POST":
+                form = profileForm(data=request.POST)
+                if form.is_valid():
+                    formInstance = form.save(commit=False)
+                    formInstance.userId = request.user
+                    formInstance.save()
+                    return redirect("index")
+        else:
+            form = profileForm()
+    context = {"form": form}
+    return render(request, 'main/profile.html', context)
+
 def login(request):
     if not request.user.is_authenticated:
         if request.method == "POST":
@@ -256,7 +279,7 @@ def register(request):
                 password = form.cleaned_data["password1"]
                 user = authenticate(username=username, password=password)
                 auth_login(request, user)
-                return redirect("index")
+                return redirect("profile")
         else:
             form = RegistrationForm()
         return render(request, 'registration/register.html', {"form": form})

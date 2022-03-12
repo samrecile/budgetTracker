@@ -3,9 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path("register/", views.register, name="register"),
-    path("login/", views.login, name="login"),
-    path("logout/", views.logout, name="logout"),
     path('calendar/', views.calendar, name='calendar'),
     path('calendar/<str:month>/<str:year>', views.calendar, name='calendar'),
     path('change_month/', views.changeMonth, name='changeMonth'),
@@ -18,4 +15,8 @@ urlpatterns = [
     path('changeLiability/<str:formDate>', views.changeLiability, name='changeLiability'),
     path('changeRecurring/', views.changeRecurring, name='changeRecurring'),
     path('changeRecurring/<str:formDate>', views.changeRecurring, name='changeRecurring'),
+    path("register/", views.register, name="register"),
+    path("login/", views.login, name="login"),
+    path("logout/", views.logout, name="logout"),
+    path('profile/', views.profileView, name='profile'),
 ]

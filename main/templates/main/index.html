@@ -1,5 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{user.username}}
+    {{user.username}}
+    <p>Net Worth = {{netWorth}}</p>
+
+    {% for asset in assets %}
+        <p>{{asset.value}}</p>
+    {% endfor %}
+    {% for liability in liabilities %}
+        <p>{{liability.value}}</p>
+    {% endfor %}
+    {% for recurring in recurringItems %}
+        <p>{{recurring.cost}}</p>
+    {% endfor %}
 {% endblock %}

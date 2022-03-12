@@ -3,7 +3,11 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+class Profile(models.Model):
+    userId = models.OneToOneField(User, on_delete=models.CASCADE,)
+    cash = models.DecimalField(max_digits=12, decimal_places=2, blank=False, default=0)
+
+
 class daily(models.Model):
     dayId = models.AutoField(primary_key=True)
     date = models.DateField(auto_now_add=True)
@@ -54,7 +58,7 @@ class recurring(models.Model):
 
     name = models.CharField(max_length=50)
     category = models.CharField(max_length=50, choices=categories)
-    cost = models.DecimalField(max_digits=8, decimal_places=2)
+    value = models.DecimalField(max_digits=8, decimal_places=2)
     userId = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
 
     def __str__(self):

@@ -4,14 +4,67 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h3>Net Worth: {{netWorth}}</h3>
-    <a href="{% url 'changeAsset' %}">Add New Asset</a>
-    <a href="{% url 'changeRecurring' %}">Add New Recurring Item</a>
-    <a href="{% url 'changeLiability'%}">Add New Liability</a>
+<style>
+    table {
+      text-align: left;
+      padding-bottom: 15px;
+      padding-left: 15px;
+      padding-right: 15px;
+      width: 100%;
+      height: 200px;
+  
+    }
+  
+    th, td {
+      text-align: left;
+      border-bottom: 2px dotted #ddd;
+      border-spacing: 1px;
+      padding-left: 20px;
+      padding: 5px;
+    }
+  
+    td:hover {
+      color: dodgerblue
+    }
+  
+  </style>
 
-    {% for asset in assets %}
-        <p>{{asset.value}}</p>
-    {% endfor %}
+    <h3>Net Worth: {{netWorth}}</h3>
+    <p><a href="{% url 'changeAsset' %}">Add New Asset</a></p>
+    <p><a href="{% url 'changeRecurring' %}">Add New Recurring Item</a></p>
+    <p><a href="{% url 'changeLiability'%}">Add New Liability</a></p>
+
+    <div class="max-width">
+          <!--<h2 class="title">Hey, I'm Sam </h2>-->
+          <div>
+            <table>
+              <tr>
+                <th>Assets</th>
+                <th></th>
+                <th></th>
+              </tr>
+              <tr>
+                <td>Link</td>
+                <td>Cash</td>
+                <td>{{profile.cash}}</td>
+              </tr>
+              {% for asset in assets %}
+                <tr>
+                    <td>Link</td>
+                    <td>{{asset.name}}</td>
+                    <td>{{asset.value}}</td>
+                </tr>
+              {% endfor %}
+              <tr>
+                <td>TOTAL</td>
+                <td></td>
+                <td>{{assetTotal}}</td>
+              </tr>
+            </table>
+          </div>
+      </div>
+
+
     {% for liability in liabilities %}
         <p>{{liability.value}}</p>
     {% endfor %}
