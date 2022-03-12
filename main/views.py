@@ -145,12 +145,21 @@ def assetsLiabilities(request):
     profile = Profile.objects.get(userId=user)
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
-    recurringItems = recurring.objects.filter(userId=user)
+    posRecurringItems = recurring.objects.filter(userId=user).filter(category="Income")
+    negRecurringItems = recurring.objects.filter(userId=user).filter(category="Expense")
     netWorth = 0
     assetTotal = profile.cash
+    liabilitiesTotal = 0
+    recurringTotal = 0
     for assetItem in assets:
         assetTotal += assetItem.value
-    context = {"assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "profile":profile, "netWorth": netWorth, "assetTotal":assetTotal}
+    for liabilityItem in liabilities:
+        liabilitiesTotal += liabilityItem.value
+    for recurringItem in negRecurringItems:
+        recurringTotal -= recurringItem.value
+    for recurringItem in posRecurringItems:
+        recurringTotal += recurringItem.value
+    context = {"assets":assets, "liabilities":liabilities, "posRecurringItems":posRecurringItems, "negRecurringItems":negRecurringItems, "profile":profile, "netWorth": netWorth, "assetTotal":assetTotal, "liabilitiesTotal":liabilitiesTotal, "recurringTotal":recurringTotal}
     return render(request, 'main/alr.html', context)
 
 @login_required(login_url='/login/')

@@ -8,7 +8,6 @@ admin.site.register(liability)
 admin.site.register(asset)
 admin.site.register(Profile)
 
-
 class modelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user = request.user

@@ -30,9 +30,9 @@
   </style>
 
     <h3>Net Worth: {{netWorth}}</h3>
-    <p><a href="{% url 'changeAsset' %}">Add New Asset</a></p>
-    <p><a href="{% url 'changeRecurring' %}">Add New Recurring Item</a></p>
-    <p><a href="{% url 'changeLiability'%}">Add New Liability</a></p>
+    <button type="submit" class="btn btn-success"><a href="{% url 'changeAsset' %}">Add New Asset</a></button>
+    <button type="submit" class="btn btn-success"><a href="{% url 'changeRecurring' %}">Add New Recurring Item</a></button>
+    <button type="submit" class="btn btn-success"><a href="{% url 'changeLiability'%}">Add New Liability</a></button>
 
     <div class="max-width">
           <!--<h2 class="title">Hey, I'm Sam </h2>-->
@@ -44,23 +44,76 @@
                 <th></th>
               </tr>
               <tr>
-                <td>Link</td>
+                <td></td>
                 <td>Cash</td>
                 <td>{{profile.cash}}</td>
               </tr>
               {% for asset in assets %}
                 <tr>
-                    <td>Link</td>
+                    <td><a href="{% url 'changeAsset' %}">Edit</a></td>
                     <td>{{asset.name}}</td>
                     <td>{{asset.value}}</td>
                 </tr>
               {% endfor %}
               <tr>
-                <td>TOTAL</td>
+                <td>SUM</td>
                 <td></td>
                 <td>{{assetTotal}}</td>
               </tr>
             </table>
+          </div>
+          <div>
+            <table>
+                <tr>
+                  <th>Liabilities</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                {% for liability in liabilities %}
+                  <tr>
+                      <td>Link</td>
+                      <td>{{liability.name}}</td>
+                      <td>{{liability.value}}</td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                  <td>TOTAL</td>
+                  <td></td>
+                  <td>{{liabilitiesTotal}}</td>
+                </tr>
+              </table>
+          </div>
+          <div>
+            <table>
+                <tr>
+                  <th>Recurring</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                {% for recurring in posRecurringItems %}
+                  <tr>
+                      <td>Link</td>
+                      <td>{{recurring.name}}</td>
+                      <td>{{recurring.category}}</td>
+                      <td>{{recurring.value}}</td>
+                  </tr>
+                {% endfor %}
+                {% for recurring in negRecurringItems %}
+                  <tr>
+                      <td>Link</td>
+                      <td>{{recurring.name}}</td>
+                      <td>{{recurring.category}}</td>
+                      <td>{{recurring.value}}</td>
+                  </tr>
+                {% endfor %}
+                <tr>
+                  <td>TOTAL</td>
+                  <td></td>
+                  <td></td>
+                  <td>{{recurringTotal}}</td>
+                </tr>
+              </table>
           </div>
       </div>
 

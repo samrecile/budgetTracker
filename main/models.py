@@ -29,6 +29,7 @@ class daily(models.Model):
         return (str(self.userId) + ' - ' + str(self.date))
 
 class asset(models.Model):
+    asset_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     value = models.DecimalField(max_digits=8, decimal_places=2)
     depreciation = models.DecimalField(max_digits=8, decimal_places=2, blank=True, default=0)
@@ -40,6 +41,7 @@ class asset(models.Model):
         return str(self.name)
 
 class liability(models.Model):
+    liability_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     value = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     interest = models.DecimalField(max_digits=8, decimal_places=2, default=0)
@@ -56,6 +58,7 @@ class recurring(models.Model):
         ('Income', 'Income'),
     ]
 
+    recurring_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     category = models.CharField(max_length=50, choices=categories)
     value = models.DecimalField(max_digits=8, decimal_places=2)
