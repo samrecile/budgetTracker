@@ -163,7 +163,7 @@ def assetsLiabilities(request):
     return render(request, 'main/alr.html', context)
 
 @login_required(login_url='/login/')
-def changeAsset(request, form_date=None):
+def createAsset(request):
     context = {}
     if request.method == "POST":
         form = assetForm(request.POST)
@@ -176,18 +176,53 @@ def changeAsset(request, form_date=None):
             formInstance.save()
         return redirect('A&L')
     else:
-        try:
-        # passes form with existing instance data
-            previousForm = asset.objects.get(date=form_date)
-            form = assetForm(instance=previousForm)
-            context['form'] = form
-        except:
-            form = assetForm()
-            context['form'] = form
+        form = assetForm()
+        context['form'] = form
+        context['urlName'] = 'createAsset'
     return render(request, 'main/assetForm.html', context)
 
+def editAsset(request, assetId=None):
+    context = {}
+    if request.method == "POST":
+        form = assetForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            assetData = form.cleaned_data
+            assetObj = asset.objects.get(asset_id=assetId)
+            assetObj.name = assetData['name']
+            assetObj.value = assetData['value']
+            assetObj.appreciation = assetData['appreciation']
+            assetObj.depreciation = assetData['depreciation']
+            assetObj.save()
+        return redirect('A&L')
+    else:
+        assetInstance = asset.objects.get(asset_id=assetId)
+        form = assetForm(instance=assetInstance)
+        context['form'] = form
+        context['assetInstance'] = assetInstance
+    return render(request, 'main/editAsset.html', context)
+
+def deleteAsset(request, assetId=None):
+    try:
+        # passes form with existing instance data
+        assetObj = asset.objects.get(asset_id=assetId)
+        assetObj.delete()
+    except:
+        return redirect('A&L')
+    return redirect('A&L')
+
+
+
+
+
+
+
+
+
+
+
 @login_required(login_url='/login/')
-def changeLiability(request, form_date=None):
+def createLiability(request):
     context = {}
     if request.method == "POST":
         form = liabilitiesForm(request.POST)
@@ -200,18 +235,53 @@ def changeLiability(request, form_date=None):
             formInstance.save()
         return redirect('A&L')
     else:
-        try:
-        # passes form with existing instance data
-            previousForm = liability.objects.get(date=form_date)
-            form = liabilitiesForm(instance=previousForm)
-            context['form'] = form
-        except:
-            form = liabilitiesForm()
-            context['form'] = form        
+        form = liabilitiesForm()
+        context['form'] = form
     return render(request, 'main/liabilitiesForm.html', context)
 
+def editLiability(request, liabilityId=None):
+    context = {}
+    if request.method == "POST":
+        form = liabilitiesForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            liabilityData = form.cleaned_data
+            liabilityObj = liability.objects.get(liability_id=liabilityId)
+            liabilityObj.name = liabilityData['name']
+            liabilityObj.value = liabilityData['value']
+            liabilityObj.interest = liabilityData['interest']
+            liabilityObj.payment = liabilityData['payment']
+            liabilityObj.save()
+        return redirect('A&L')
+    else:
+        liabilityInstance = liability.objects.get(liability_id=liabilityId)
+        form = liabilitiesForm(instance=liabilityInstance)
+        context['form'] = form
+        context['liabilityInstance'] = liabilityInstance
+    return render(request, 'main/editLiability.html', context)
+
+def deleteLiability(request, liabilityId=None):
+    try:
+        # passes form with existing instance data
+        liabilityObj = liability.objects.get(liability_id=liabilityId)
+        liabilityObj.delete()
+    except:
+        return redirect('A&L')
+    return redirect('A&L')
+
+
+
+
+
+
+
+
+
+
+
+
 @login_required(login_url='/login/')
-def changeRecurring(request, form_date=None):
+def createRecurring(request):
     context = {}
     if request.method == "POST":
         form = recurringForm(request.POST)
@@ -224,15 +294,44 @@ def changeRecurring(request, form_date=None):
             formInstance.save()
         return redirect('A&L')
     else:
-        try:
-        # passes form with existing instance data
-            previousForm = recurring.objects.get(date=form_date)
-            form = recurringForm(instance=previousForm)
-            context['form'] = form
-        except:
-            form = recurringForm()
-            context['form'] = form
+        form = recurringForm()
+        context['form'] = form
     return render(request, 'main/recurringForm.html', context)
+
+def editRecurring(request, recurringId=None):
+    context = {}
+    if request.method == "POST":
+        form = recurringForm(request.POST)
+        if form.is_valid():
+            # create form instance w form.cleaned_data
+            recurringData = form.cleaned_data
+            recurringObj = recurring.objects.get(recurring_id=recurringId)
+            recurringObj.name = recurringData['name']
+            recurringObj.category = recurringData['category']
+            recurringObj.value = recurringData['value']
+            recurringObj.save()
+        return redirect('A&L')
+    else:
+        recurringInstance = recurring.objects.get(recurring_id=recurringId)
+        form = recurringForm(instance=recurringInstance)
+        context['form'] = form
+        context['recurringInstance'] = recurringInstance
+    return render(request, 'main/editRecurring.html', context)
+
+def deleteRecurring(request, recurringId=None):
+    try:
+        # passes form with existing instance data
+        recurringObj = recurring.objects.get(recurring_id=recurringId)
+        recurringObj.delete()
+    except:
+        return redirect('A&L')
+    return redirect('A&L')
+
+
+
+
+
+
 
 # edit username, pw, email
 @login_required(login_url='/login/')
