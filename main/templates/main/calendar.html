@@ -4,15 +4,73 @@
 {% load crispy_forms_tags %}
 
 {% block content %} 
-    <h1>{{templateMonth}}</h1>
-    {% for date in dates %}
-        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
-    {% endfor %}
 
+<style>
+    table {
+      text-align: left;
+      padding-bottom: 15px;
+      padding-left: 15px;
+      padding-right: 15px;
+      width: 100%;
+      height: 200px;
+  
+    }
+  
+    th, td {
+      text-align: left;
+      border-bottom: 2px dotted #ddd;
+      border-spacing: 1px;
+      padding-left: 20px;
+      padding: 5px;
+    }
+  
+    td:hover {
+      color: dodgerblue
+    }
+  
+  </style>
+{% for dailyObject in dailyObjects %}
+    {% if dailyObject.date %}
+        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' dailyObject.date %}">{{dailyObject.date|date:'Y-m-d'}}</a></button>
+    {% else %} 
+        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' dailyObject %}">{{dailyObject}}</a></button>
+    {% endif %}
+    {% if dailyObject.income %}
+        <p>{{dailyObject.income}}</p>
+    {% else %}
+        <p>0</p>
+    {% endif %}
+{% endfor %}
+
+<div>
+    <table>
+        <tr>
+          <th><h3>{{templateMonth}}</h3></th>
+          <th></th>
+          <th></th>
+        </tr>
+        {% for date in dates %}
+          <tr>
+            <td><button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' date %}">{{date}}</a></button></td>
+              <td></td>
+              <td></td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td>{{templateMonth}} Totals</td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+  </div>
+
+
+<div>
     <p>View a different month:</p>
     <form method="POST" action="{% url 'changeMonth' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>
     </form>
+</div>
 {% endblock %}

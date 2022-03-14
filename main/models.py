@@ -10,7 +10,7 @@ class Profile(models.Model):
 
 class daily(models.Model):
     dayId = models.AutoField(primary_key=True)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now_add=False)
     income = models.DecimalField(max_digits=8, decimal_places=2)
     restExp = models.DecimalField(max_digits=8, decimal_places=2)
     grocExp = models.DecimalField(max_digits=8, decimal_places=2)

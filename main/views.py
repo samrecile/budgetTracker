@@ -20,8 +20,11 @@ def index(request):
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
     recurringItems = recurring.objects.filter(userId=user)
-    profile = Profile.objects.get(userId=request.user)
-    cash = profile.cash
+    try:
+        profile = Profile.objects.get(userId=request.user)
+        cash = profile.cash
+    except:
+        return redirect('profile')
     netWorth = cash
     for assetItem in assets:
         netWorth += assetItem.value
@@ -76,7 +79,16 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
     context["dates"] = dateList
     form = changeMonthForm
     context["form"] = form
-    #daily.objects.filter(date=)
+    dailyObjects = []
+    for date in dateList:
+        dateTimeObj = datetime.fromisoformat("{dateString} 01:01:01".format(dateString=date))
+        try:
+            dailyObject = daily.objects.get(date=dateTimeObj)
+            dailyObjects.append(dailyObject)
+        except:
+            dailyObjects.append(date)
+
+    context['dailyObjects'] = dailyObjects
     return render(request, 'main/calendar.html', context)
 
 # use months list index to convert to str(number), with str(year)
@@ -96,7 +108,7 @@ def changeMonth(request):
 @login_required(login_url='/login/')
 # day_form returns a day form from a specific date
 # or renders a new form for today
-def dayForm(request, formDate=str(date.today())):
+def dayForm(request, formDate):
     # date for header
     templateDate = formDate
     # ensures arg is string
@@ -112,13 +124,20 @@ def dayForm(request, formDate=str(date.today())):
     if request.method == "POST":
         form = dailyForm(request.POST)
         if form.is_valid():
+            try:
+            # passes form with existing instance data
+                day = daily.objects.filter(date=form_date)
+                day.delete()
+            except:
+                None
             # create form instance w form.cleaned_data
             formInstance = form.save(commit=False)
             # populate form with user 
             formInstance.userId = request.user
+            formInstance.date = form_date
             # save form
             formInstance.save()
-        return HttpResponseRedirect('main/results.html')
+        return redirect('calendar')
     # display form
     else:
         try:
