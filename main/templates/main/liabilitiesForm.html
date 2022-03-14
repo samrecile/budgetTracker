@@ -5,7 +5,7 @@
 
 {% block content %} 
     <h2>Liability Form</h2>
-    <form method="POST" action="{% url 'changeLiability' %}" class="form-group">
+    <form method="POST" action="{% url 'createLiability' %}" class="form-group">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="btn btn-success">Submit</button>

@@ -6,7 +6,7 @@
 {% block content %} 
     <h1>{{templateMonth}}</h1>
     {% for date in dates %}
-        <button type="submit" id='dateSubmission' class="btn btn-secondary"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
+        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' date %}">{{date}}</a></button>
     {% endfor %}
 
     <p>View a different month:</p>

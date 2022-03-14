@@ -29,10 +29,12 @@
   
   </style>
 
-    <h3>Net Worth: {{netWorth}}</h3>
-    <button type="submit" class="btn btn-success"><a href="{% url 'createAsset' %}">Add New Asset</a></button>
-    <button type="submit" class="btn btn-success"><a href="{% url 'createRecurring' %}">Add New Recurring Item</a></button>
-    <button type="submit" class="btn btn-success"><a href="{% url 'createLiability'%}">Add New Liability</a></button>
+    <h3 style="padding-top: 50px;">Net Worth: {{netWorth}}</h3>
+    <div>
+        <button type="submit" class="btn btn-success"><a href="{% url 'createAsset' %}">Add New Asset</a></button>
+        <button type="submit" class="btn btn-success"><a href="{% url 'createLiability'%}">Add New Liability</a></button>
+        <button type="submit" class="btn btn-success"><a href="{% url 'createRecurring' %}">Add New Recurring Item</a></button>
+    </div>
 
     <div class="max-width">
           <!--<h2 class="title">Hey, I'm Sam </h2>-->

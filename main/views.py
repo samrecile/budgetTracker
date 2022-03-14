@@ -17,15 +17,16 @@ from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recu
 @login_required(login_url='/login/')
 def index(request):
     user = request.user
-    netWorth = 0
-    assetList = []
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
     recurringItems = recurring.objects.filter(userId=user)
-    for assetval in assets:
-        netWorth += assetval.value
-    for liaVal in liabilities:
-        netWorth -= liaVal.value
+    profile = Profile.objects.get(userId=request.user)
+    cash = profile.cash
+    netWorth = cash
+    for assetItem in assets:
+        netWorth += assetItem.value
+    for liaItem in liabilities:
+        netWorth -= liaItem.value
     context = {"user": user, "assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
     return render(request, 'main/index.html', context)
 
@@ -75,6 +76,7 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
     context["dates"] = dateList
     form = changeMonthForm
     context["form"] = form
+    #daily.objects.filter(date=)
     return render(request, 'main/calendar.html', context)
 
 # use months list index to convert to str(number), with str(year)
