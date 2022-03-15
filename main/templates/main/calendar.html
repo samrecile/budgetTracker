@@ -29,43 +29,52 @@
     }
   
   </style>
-{% for dailyObject in dailyObjects %}
-    {% if dailyObject.date %}
-        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' dailyObject.date %}">{{dailyObject.date|date:'Y-m-d'}}</a></button>
-    {% else %} 
-        <button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' dailyObject %}">{{dailyObject}}</a></button>
-    {% endif %}
-    {% if dailyObject.income %}
-        <p>{{dailyObject.income}}</p>
-    {% else %}
-        <p>0</p>
-    {% endif %}
-{% endfor %}
 
 <div>
     <table>
         <tr>
           <th><h3>{{templateMonth}}</h3></th>
-          <th></th>
-          <th></th>
+          <th>Income</th>
+          <th>Expenses</th>
+          <th>Sum</th>
         </tr>
-        {% for date in dates %}
-          <tr>
-            <td><button type="submit" id='dateSubmission' class="btn btn-success"><a href="{% url 'dayForm' date %}">{{date}}</a></button></td>
-              <td></td>
-              <td></td>
-          </tr>
-        {% endfor %}
+        {% for dailyObject in dailyObjects %}
         <tr>
-          <td>{{templateMonth}} Totals</td>
-          <td></td>
-          <td></td>
+            {% if dailyObject.date %}
+                <td><a href="{% url 'dayForm' dailyObject.date %}">{{dailyObject.date|date:'Y-m-d'}}</a></td>
+            {% else %} 
+                <td><a href="{% url 'dayForm' dailyObject %}">{{dailyObject}}</a></td>
+            {% endif %}
+            {% if dailyObject.income %}
+                <td>${{dailyObject.income}}
+                </td>
+            {% else %}
+                <td>$0</td>
+            {% endif %}
+            {% if dailyObject.totalExpenses %}
+                <td>{{dailyObject.totalExpenses}}</td>
+            {% else %}
+                <td>0</td>
+            {% endif %}
+            {% if dailyObject.getSum %}
+                <td>{{dailyObject.getSum}}</td>
+            {% else %}
+                <td>0</td>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    
+        <tr>
+          <td><strong>{{templateMonth}} Totals</strong></td>
+          <td>{{monthlyIncome}}</td>
+          <td>{{monthlyExpense}}</td>
+          <td>{{monthlyTotal}}</td>
         </tr>
       </table>
   </div>
 
 
-<div>
+<div style="padding-top: 50px;">
     <p>View a different month:</p>
     <form method="POST" action="{% url 'changeMonth' %}" class="form-group">
         {% csrf_token %}

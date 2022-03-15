@@ -28,6 +28,23 @@ class daily(models.Model):
     def __str__(self):
         return (str(self.userId) + ' - ' + str(self.date))
 
+    def totalExpenses(self):
+        dailyExpenseTotal = self.restExp
+        dailyExpenseTotal += self.grocExp
+        dailyExpenseTotal += self.gasExp
+        dailyExpenseTotal += self.uberExp
+        dailyExpenseTotal += self.alcExp
+        dailyExpenseTotal += self.barberExp
+        dailyExpenseTotal += self.barExp
+        dailyExpenseTotal += self.discExp
+        return dailyExpenseTotal
+
+    def getSum(self):
+        sumTotal = self.totalExpenses()
+        sumTotal = self.income - sumTotal
+        return sumTotal
+
+
 class asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)

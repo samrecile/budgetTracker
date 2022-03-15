@@ -80,15 +80,21 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
     form = changeMonthForm
     context["form"] = form
     dailyObjects = []
+    monthlyIncome = 0
+    monthlyExpense = 0
     for date in dateList:
         dateTimeObj = datetime.fromisoformat("{dateString} 01:01:01".format(dateString=date))
         try:
             dailyObject = daily.objects.get(date=dateTimeObj)
             dailyObjects.append(dailyObject)
+            monthlyIncome += dailyObject.income
+            monthlyExpense += dailyObject.totalExpenses()
         except:
             dailyObjects.append(date)
-
     context['dailyObjects'] = dailyObjects
+    context['monthlyIncome'] = monthlyIncome
+    context['monthlyExpense'] = monthlyExpense
+    context['monthlyTotal'] = monthlyIncome - monthlyExpense
     return render(request, 'main/calendar.html', context)
 
 # use months list index to convert to str(number), with str(year)
@@ -231,15 +237,6 @@ def deleteAsset(request, assetId=None):
     except:
         return redirect('A&L')
     return redirect('A&L')
-
-
-
-
-
-
-
-
-
 
 
 @login_required(login_url='/login/')
