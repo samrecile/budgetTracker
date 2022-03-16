@@ -77,3 +77,8 @@ class liabilitiesForm(ModelForm):
     class Meta:
         model = liability
         fields = ['name', 'value', 'interest', 'payment']
+
+class accountForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email', 'password']

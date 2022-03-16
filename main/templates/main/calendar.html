@@ -27,13 +27,30 @@
     td:hover {
       color: dodgerblue
     }
-  
+    
+    .button {
+        background-color: dodgerblue;
+        border: none;
+        color: white;
+        padding: 5px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        border-radius: 60px;
+    }
   </style>
 
 <div>
     <table>
         <tr>
-          <th><h3>{{templateMonth}}</h3></th>
+          <th><form method="POST" action="{% url 'changeMonth' %}" class="form-group">
+            {% csrf_token %}
+            <div class="fieldWrapper">
+                {{ form.month }} - {{ form.year }} <button type="submit" class="button">Change</button>
+            </div>
+        </form></th>
           <th>Income</th>
           <th>Expenses</th>
           <th>Sum</th>
@@ -52,34 +69,25 @@
                 <td>$0</td>
             {% endif %}
             {% if dailyObject.totalExpenses %}
-                <td>{{dailyObject.totalExpenses}}</td>
+                <td>${{dailyObject.totalExpenses}}</td>
             {% else %}
-                <td>0</td>
+                <td>$0</td>
             {% endif %}
             {% if dailyObject.getSum %}
-                <td>{{dailyObject.getSum}}</td>
+                <td>${{dailyObject.getSum}}</td>
             {% else %}
-                <td>0</td>
+                <td>$0</td>
             {% endif %}
         {% endfor %}
         </tr>
     
         <tr>
           <td><strong>{{templateMonth}} Totals</strong></td>
-          <td>{{monthlyIncome}}</td>
-          <td>{{monthlyExpense}}</td>
-          <td>{{monthlyTotal}}</td>
+          <td>${{monthlyIncome}}</td>
+          <td>${{monthlyExpense}}</td>
+          <td>${{monthlyTotal}}</td>
         </tr>
       </table>
   </div>
 
-
-<div style="padding-top: 50px;">
-    <p>View a different month:</p>
-    <form method="POST" action="{% url 'changeMonth' %}" class="form-group">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-success">Submit</button>
-    </form>
-</div>
 {% endblock %}

@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from .models import daily, recurring, asset, liability, Profile
-from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm, liabilitiesForm, profileForm
+from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recurringForm, liabilitiesForm, profileForm, accountForm
 
 # home page
 @login_required(login_url='/login/')
@@ -38,7 +38,8 @@ def index(request):
 def calendar(request, month=str(date.today().month), year=str(date.today().year)):
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     templateMonth = months[int(month)-1]
-    context = {'templateMonth':templateMonth}
+    templateYear = year
+    context = {'templateMonth':templateMonth, 'templateYear':templateYear}
     thirty = ['04', '06', '09', 11]
     thirty_one = ['01', '03', '05', '07', '08', 10, 12]
     currentMonth = month
@@ -53,7 +54,7 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
             x += 1
             if x < 10:
                 x = '0' + str(x)
-            dateList.append('{year}-{month}-{day}-'.format(day=x, month=currentMonth, year=currentYear))
+            dateList.append('{year}-{month}-{day}'.format(day=x, month=currentMonth, year=currentYear))
     # if 31 day month
     elif currentMonth in thirty_one:
         dateList = []
@@ -67,7 +68,7 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
     else:
         dateList = []
         # if a leap year (leap years are divisible by 4)
-        if currentYear % 4 == 0:
+        if int(currentYear) % 4 == 0:
             count = 29
         else:
             count = 28
@@ -77,15 +78,15 @@ def calendar(request, month=str(date.today().month), year=str(date.today().year)
                 x = '0' + str(x)
             dateList.append('{year}-02-{day}'.format(day=x, year=currentYear))
     context["dates"] = dateList
-    form = changeMonthForm
+    form = changeMonthForm(initial={'month':templateMonth.lower(), 'year':templateYear})
     context["form"] = form
     dailyObjects = []
     monthlyIncome = 0
     monthlyExpense = 0
     for date in dateList:
-        dateTimeObj = datetime.fromisoformat("{dateString} 01:01:01".format(dateString=date))
+        dateTimeObj = datetime.fromisoformat("{dateString}".format(dateString=date.rstrip('-')))
         try:
-            dailyObject = daily.objects.get(date=dateTimeObj)
+            dailyObject = daily.objects.filter(date=dateTimeObj).get(userId=request.user)
             dailyObjects.append(dailyObject)
             monthlyIncome += dailyObject.income
             monthlyExpense += dailyObject.totalExpenses()
@@ -132,7 +133,7 @@ def dayForm(request, formDate):
         if form.is_valid():
             try:
             # passes form with existing instance data
-                day = daily.objects.filter(date=form_date)
+                day = daily.objects.filter(date=form_date).get(user=request.user)
                 day.delete()
             except:
                 None
@@ -148,7 +149,7 @@ def dayForm(request, formDate):
     else:
         try:
             # passes form with existing instance data
-            day = daily.objects.get(date=form_date)
+            day = daily.objects.filter(date=form_date).get(userId=request.user)
             form = dailyForm(instance=day)
             context['form'] = form
         except:
@@ -354,6 +355,15 @@ def deleteRecurring(request, recurringId=None):
 # edit username, pw, email
 @login_required(login_url='/login/')
 def account(request):
+    if request.method == "POST":
+        form = accountForm(data=request.POST)
+        if form.is_valid():
+            formInstance.save()
+            return redirect("index")
+    else:
+        form = accountForm(instance=request.user)
+    context = {"form": form}
+    return render(request, 'main/profile.html', context)
     pass
 
 @login_required(login_url='/login/')

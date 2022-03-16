@@ -18,6 +18,7 @@ urlpatterns = [
     path('createRecurring/', views.createRecurring, name='createRecurring'),
     path('editRecurring/<int:recurringId>', views.editRecurring, name='editRecurring'),
     path('deleteRecurring/<int:recurringId>', views.deleteRecurring, name='deleteRecurring'),
+    path('account/', views.account, name="account"),
     path("register/", views.register, name="register"),
     path("login/", views.login, name="login"),
     path("logout/", views.logout, name="logout"),

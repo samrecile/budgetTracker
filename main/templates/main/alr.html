@@ -28,20 +28,13 @@
     }
   
   </style>
-
     <h3 style="padding-top: 50px;">Net Worth: {{netWorth}}</h3>
-    <div>
-        <button type="submit" class="btn btn-success"><a href="{% url 'createAsset' %}">Add New Asset</a></button>
-        <button type="submit" class="btn btn-success"><a href="{% url 'createLiability'%}">Add New Liability</a></button>
-        <button type="submit" class="btn btn-success"><a href="{% url 'createRecurring' %}">Add New Recurring Item</a></button>
-    </div>
-
     <div class="max-width">
           <!--<h2 class="title">Hey, I'm Sam </h2>-->
           <div>
             <table>
               <tr>
-                <th>Assets</th>
+                <th>Assets <a href="{% url 'createAsset' %}">+</a></th>
                 <th></th>
                 <th></th>
               </tr>
@@ -67,7 +60,7 @@
           <div>
             <table>
                 <tr>
-                  <th>Liabilities</th>
+                  <th>Liabilities <a href="{% url 'createLiability'%}">+</a></th>
                   <th></th>
                   <th></th>
                 </tr>
@@ -88,7 +81,7 @@
           <div>
             <table>
                 <tr>
-                  <th>Recurring</th>
+                  <th>Recurring <a href="{% url 'createRecurring' %}">+</a></th>
                   <th></th>
                   <th></th>
                   <th></th>
