@@ -16,7 +16,7 @@ from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recu
 # home page
 @login_required(login_url='/login/')
 def index(request):
-    # get user assets, liabilities, and recurring items
+    # get user assets, liabilities
     user = request.user
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
@@ -37,47 +37,98 @@ def index(request):
     currentMonth = date.today().month
     currentDay = date.today().day
     templateDate = "{day}-{month}-{year}".format(day=currentDay, month=currentMonth, year=currentYear)
-    # add leading 0 if month is single digit so fromisoformat will work
-    if currentMonth < 10:
-        currentMonth = '0' + str(currentMonth)
+    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-    # 1st of month datetime object
-    firstOfMonth = datetime.fromisoformat("{year}-{month}-01".format(year=currentYear, month=currentMonth))
-    # daily object queryset for current month
-    monthDailyObjects = daily.objects.filter(date__gte=firstOfMonth).filter(userId=user)
-    monthlyRecurringItems = recurring.objects.filter(userId=user)
-    monthlyRecurringCost = 0
-    if monthlyRecurringItems:
-        for item in monthlyRecurringItems:
-            if item.category == "Expense":
-                monthlyRecurringCost -= item.value
-            elif item.category == "Income":
-                monthlyRecurringCost += item.value
+    class monthSummary(object):
+        def __init__(self, month, income, expense):
+            self.month = month
+            self.income = income
+            self.expense = expense
+            self.sum = self.income - self.expense
+            if self.sum < 0:
+                self.sum = -self.sum
+                # negative sum will be used for comparison in template
+                self.negativeSum = True
             else:
-                monthlyRecurringCost = 0
+                self.negativeSum = False
 
-    currentMonthIncome = 0
-    currentMonthExpenses = 0
-    for day in monthDailyObjects:
-         # sum all income for this month
-        currentMonthIncome += day.income
-        # sum all expenses for this month
-        currentMonthExpenses += 0
 
-    # sum all income for year
+    # list to append monthSummary objects
+    monthObjects = []
 
-    # jan 1 of this year datetime object
-    firstOfYear = datetime.fromisoformat("{year}-01-01".format(year=currentYear))
-    # daily object queryset for current year
-    yearDailyObjects = daily.objects.filter(date__gte=firstOfYear).filter(userId=user)
+    for x in range(len(months)):
+        objectMonth = x + 1
+        nextMonth = objectMonth + 1
+        if currentMonth < objectMonth:
+            continue
+        # add leading 0 if month is single digit so fromisoformat will work 
+        if objectMonth < 10:
+            objectMonth = '0' + str(objectMonth)
+        else:
+
+            objectMonth = str(objectMonth)
+        if nextMonth < 10:
+            nextMonth = '0' + str(nextMonth)
+        else:
+            nextMonth = str(nextMonth)
+
+
+
+        # 1st of month datetime object
+        firstOfMonth = datetime.fromisoformat("{year}-{month}-01".format(year=currentYear, month=objectMonth))
+        # last of month
+        lastOfMonth = datetime.fromisoformat("{year}-{month}-01".format(year=currentYear, month=nextMonth))
+
+        # variables to increment; will be added to monthSummary object
+        monthlyExpense = 0
+        monthlyIncome = 0
+        
+
+        #query recurring items
+        monthlyRecurringItems = recurring.objects.filter(userId=user)
+        if monthlyRecurringItems:
+            for item in monthlyRecurringItems:
+                if item.category == "Expense":
+                    monthlyExpense += item.value
+                elif item.category == "Income":
+                    monthlyIncome += item.value
+                else:
+                    monthlyRecurringCost = 0
+
+         # daily object queryset for current month
+        monthDailyObjects = daily.objects.filter(date__gte=firstOfMonth).filter(date__lt=lastOfMonth).filter(userId=user)
+        # loop through objects and add income and expenses
+        for day in monthDailyObjects:
+            # sum all income for this month
+            monthlyIncome += day.income
+            # sum all expenses for this month
+            monthlyExpense += day.totalExpenses()
+        
+        # create monthObjects 
+        m = monthSummary(months[x], monthlyIncome, monthlyExpense)
+        monthObjects.append(m)
+
+    
+     # values for incrementing year total
     currentYearIncome = 0
     currentYearExpenses = 0
-    # sum all expenses for year (include recurring items)
-    #recurringCostTotal = int(currentMonth) * 
-    # loop through year items and add daily totals to income and expense dictionaries with month as key
-    # loop through dictionaries and get averages
 
-    context = {"user": user, "templateDate":templateDate, "cash":cash, "assets":assets, "liabilities":liabilities, "netWorth": netWorth, "monthlyRecurringCost":monthlyRecurringCost, "currentMonthIncome":currentMonthIncome, "currentMonthExpenses":currentMonthExpenses}
+
+    # loop through monthObjects to sum all income & expenses for year
+    for month in monthObjects:
+        currentYearIncome += month.income
+        currentYearExpenses -= month.expense
+
+    currentYearDiff = currentYearIncome - currentYearExpenses
+    currentYearExpenses = -currentYearExpenses
+
+    # divide currentYearIncome and currentYearExpenses by len(monthObjects) to get averages
+    yearAverageIncome = int(currentYearIncome/len(monthObjects))
+    yearAverageExpenses = int(currentYearExpenses/len(monthObjects))
+    yearAverageDiff = int(yearAverageIncome - yearAverageExpenses)
+
+    currentYear=str(currentYear)
+    context = {"user": user, "templateDate":templateDate, "cash":cash, "assets":assets, "liabilities":liabilities, "netWorth": netWorth, "currentYear":currentYear, "monthObjects":monthObjects, "currentYearIncome":currentYearIncome, "currentYearExpenses":currentYearExpenses, "currentYearDiff":currentYearDiff, "yearAverageIncome":yearAverageIncome, "yearAverageExpenses":yearAverageExpenses, "yearAverageDiff":yearAverageDiff}
     return render(request, 'main/index.html', context)
 
 # list of buttons that send you to a day form

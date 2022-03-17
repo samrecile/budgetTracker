@@ -38,11 +38,11 @@
     }
   </style>
 
-    <h3 style="padding-top: 50px;">{{user.username}} Summary</h3>
+    <h3 style="padding-top: 50px;">{{user.username}} Summary for {{templateDate}}</h3>
 
     <table>
         <tr>
-            <th><h5>Net Worth Breakdown for {{templateDate}}</h5></th>
+            <th><h5>Net Worth</h5></th>
             <th></th>
             <th></th>
           </tr>
@@ -74,11 +74,56 @@
         </tr>
         {% endfor %}
         <tr>   
-            <td><strong>NET WORTH</strong></td>
+            <td><strong>TOTALS</strong></td>
             <td></td>
             <td>${{netWorth}}</td>
             </td>
         </tr>
     
     </table>
+
+    <h5></h5>
+    <table>
+        <tr>
+            <th><h5>Cash Flow</h5></th>
+            <th></th>
+            <th></th>
+          </tr>
+        <tr>
+          <th>Month</th>
+          <th>Income</th>
+          <th>Expense</th>
+          <th>Total</th>
+        </tr>
+        {% for month in monthObjects %} 
+        <tr>   
+            <td>{{month.month}}</td>
+            <td>${{month.income}}</td>
+            <td>(${{month.expense}})</td>
+            {% if month.negativeSum == True %}
+            <td>(${{month.sum}})</td>
+            {% else %}
+            <td>${{month.sum}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        <tr>   
+            <td><strong>{{currentYear}} Totals</strong></td>
+            <td>${{currentYearIncome}}</td>
+            <td>(${{currentYearExpenses}})</td>
+            <td>${{currentYearDiff}}</td>
+        </tr>
+        <tr>   
+            <td><strong>{{currentYear}} Averages</strong></td>
+            <td>${{yearAverageIncome}}</td>
+            <td>(${{yearAverageExpenses}})</td>
+            <td>${{yearAverageDiff}}</td>
+        </tr>
+        
+    
+    </table>
+
+    
+
+    
 {% endblock %}
