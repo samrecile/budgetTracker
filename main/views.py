@@ -35,6 +35,8 @@ def index(request):
     # use these variables for querying data based on date
     currentYear = date.today().year
     currentMonth = date.today().month
+    currentDay = date.today().day
+    templateDate = "{day}-{month}-{year}".format(day=currentDay, month=currentMonth, year=currentYear)
     # add leading 0 if month is single digit so fromisoformat will work
     if currentMonth < 10:
         currentMonth = '0' + str(currentMonth)
@@ -60,7 +62,7 @@ def index(request):
          # sum all income for this month
         currentMonthIncome += day.income
         # sum all expenses for this month
-        currentMonthExpenses += day.totalExpenses
+        currentMonthExpenses += 0
 
     # sum all income for year
 
@@ -75,7 +77,7 @@ def index(request):
     # loop through year items and add daily totals to income and expense dictionaries with month as key
     # loop through dictionaries and get averages
 
-    context = {"user": user, "cash":cash, "assets":assets, "liabilities":liabilities, "netWorth": netWorth, "monthlyRecurringCost":monthlyRecurringCost, "currentMonthIncome":currentMonthIncome, "currentMonthExpenses":currentMonthExpenses}
+    context = {"user": user, "templateDate":templateDate, "cash":cash, "assets":assets, "liabilities":liabilities, "netWorth": netWorth, "monthlyRecurringCost":monthlyRecurringCost, "currentMonthIncome":currentMonthIncome, "currentMonthExpenses":currentMonthExpenses}
     return render(request, 'main/index.html', context)
 
 # list of buttons that send you to a day form
@@ -170,6 +172,7 @@ def dayForm(request, formDate):
     # checks if date is future date
     if form_date > date.today():
         return redirect('calendar')
+
     user = request.user
     context = {"user": user, "date": templateDate}
     # handles form submission
@@ -178,11 +181,36 @@ def dayForm(request, formDate):
         if form.is_valid():
             # create form instance w form.cleaned_data
             formInstance = form.save(commit=False)
-            # populate form with user 
-            formInstance.userId = request.user
-            formInstance.date = form_date
-            # save form
-            formInstance.save()
+            # if there's an existing daily instance for that day
+            # (you're updating the form)
+            if daily.objects.filter(date=formDate):
+                dailyObject = daily.objects.filter(date=formDate).get(userId=user)
+                profile = Profile.objects.get(userId=user)
+                #subtract income and expenses before adding updated amounts
+                profile.cash -= dailyObject.income
+                profile.cash += dailyObject.totalExpenses()
+                profile.cash += formInstance.income
+                profile.cash -= formInstance.totalExpenses()
+                profile.save()
+                # delete dailyObject
+                dailyObject.delete()
+                # recreate object
+                formInstance.userId = request.user
+                formInstance.date = form_date
+                formInstance.save()
+                
+            else: # if new profile instance
+                # populate form with user 
+                formInstance.userId = request.user
+                formInstance.date = form_date
+                # update profile cash balance
+                # get profile object
+                profile = Profile.objects.get(userId=user)
+                profile.cash += formInstance.income
+                profile.cash -= formInstance.totalExpenses()
+                profile.save()
+                # save form
+                formInstance.save()
         return redirect('calendar')
     # display form
     else:
@@ -190,10 +218,6 @@ def dayForm(request, formDate):
             # passes form with existing instance data
             day = daily.objects.filter(date=form_date).get(userId=request.user)
             form = dailyForm(instance=day)
-            # update cash balance when form instance is edited
-            profile = Profile.objects.get(userId=user)
-            profile.cash += 10
-            day.delete()
             context['form'] = form
         except:
             # passes blank form
@@ -411,20 +435,28 @@ def account(request):
 
 @login_required(login_url='/login/')
 def profileView(request):
-    try:
-        Profile.objects.get(userId=request.user)
-        return redirect("index")
-    except:
-        if request.method == "POST":
+    if request.method == "POST":
                 form = profileForm(data=request.POST)
                 if form.is_valid():
-                    formInstance = form.save(commit=False)
-                    formInstance.userId = request.user
-                    formInstance.save()
+                    if Profile.objects.get(userId=request.user):
+                        profileObject = Profile.objects.get(userId=request.user)
+                        formCash = form.cleaned_data.get('cash')
+                        profileObject.cash = formCash
+                        profileObject.save()
+                    else:
+                        formInstance = form.save(commit=False)
+                        formInstance.userId = request.user
+                        formInstance.save()
                     return redirect("index")
+    else:
+        if Profile.objects.get(userId=request.user):
+            profileObject = Profile.objects.get(userId=request.user)
+            form = profileForm(instance=profileObject)
+            value = "Edit Cash Balance"
         else:
             form = profileForm()
-    context = {"form": form}
+            value = "How much cash do you have right now?"
+    context = {"form": form, "value": value}
     return render(request, 'main/profile.html', context)
 
 def login(request):
