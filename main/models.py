@@ -42,7 +42,7 @@ class daily(models.Model):
     def getSum(self):
         sumTotal = self.totalExpenses()
         sumTotal = self.income - sumTotal
-        return sumTotal
+        return float(sumTotal)
 
 
 class asset(models.Model):

@@ -16,10 +16,11 @@ from .forms import RegistrationForm, dailyForm, changeMonthForm, assetForm, recu
 # home page
 @login_required(login_url='/login/')
 def index(request):
+    # get user assets, liabilities, and recurring items
     user = request.user
     assets = asset.objects.filter(userId=user)
     liabilities = liability.objects.filter(userId=user)
-    recurringItems = recurring.objects.filter(userId=user)
+    
     try:
         profile = Profile.objects.get(userId=request.user)
         cash = profile.cash
@@ -30,7 +31,51 @@ def index(request):
         netWorth += assetItem.value
     for liaItem in liabilities:
         netWorth -= liaItem.value
-    context = {"user": user, "assets":assets, "liabilities":liabilities, "recurringItems":recurringItems, "netWorth": netWorth}
+    
+    # use these variables for querying data based on date
+    currentYear = date.today().year
+    currentMonth = date.today().month
+    # add leading 0 if month is single digit so fromisoformat will work
+    if currentMonth < 10:
+        currentMonth = '0' + str(currentMonth)
+
+    # 1st of month datetime object
+    firstOfMonth = datetime.fromisoformat("{year}-{month}-01".format(year=currentYear, month=currentMonth))
+    # daily object queryset for current month
+    monthDailyObjects = daily.objects.filter(date__gte=firstOfMonth).filter(userId=user)
+    monthlyRecurringItems = recurring.objects.filter(userId=user)
+    monthlyRecurringCost = 0
+    if monthlyRecurringItems:
+        for item in monthlyRecurringItems:
+            if item.category == "Expense":
+                monthlyRecurringCost -= item.value
+            elif item.category == "Income":
+                monthlyRecurringCost += item.value
+            else:
+                monthlyRecurringCost = 0
+
+    currentMonthIncome = 0
+    currentMonthExpenses = 0
+    for day in monthDailyObjects:
+         # sum all income for this month
+        currentMonthIncome += day.income
+        # sum all expenses for this month
+        currentMonthExpenses += day.totalExpenses
+
+    # sum all income for year
+
+    # jan 1 of this year datetime object
+    firstOfYear = datetime.fromisoformat("{year}-01-01".format(year=currentYear))
+    # daily object queryset for current year
+    yearDailyObjects = daily.objects.filter(date__gte=firstOfYear).filter(userId=user)
+    currentYearIncome = 0
+    currentYearExpenses = 0
+    # sum all expenses for year (include recurring items)
+    #recurringCostTotal = int(currentMonth) * 
+    # loop through year items and add daily totals to income and expense dictionaries with month as key
+    # loop through dictionaries and get averages
+
+    context = {"user": user, "cash":cash, "assets":assets, "liabilities":liabilities, "netWorth": netWorth, "monthlyRecurringCost":monthlyRecurringCost, "currentMonthIncome":currentMonthIncome, "currentMonthExpenses":currentMonthExpenses}
     return render(request, 'main/index.html', context)
 
 # list of buttons that send you to a day form
@@ -131,12 +176,6 @@ def dayForm(request, formDate):
     if request.method == "POST":
         form = dailyForm(request.POST)
         if form.is_valid():
-            try:
-            # passes form with existing instance data
-                day = daily.objects.filter(date=form_date).get(user=request.user)
-                day.delete()
-            except:
-                None
             # create form instance w form.cleaned_data
             formInstance = form.save(commit=False)
             # populate form with user 
@@ -151,6 +190,10 @@ def dayForm(request, formDate):
             # passes form with existing instance data
             day = daily.objects.filter(date=form_date).get(userId=request.user)
             form = dailyForm(instance=day)
+            # update cash balance when form instance is edited
+            profile = Profile.objects.get(userId=user)
+            profile.cash += 10
+            day.delete()
             context['form'] = form
         except:
             # passes blank form

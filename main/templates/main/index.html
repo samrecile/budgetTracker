@@ -1,15 +1,84 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>{{user.username}}'s Net Worth = {{netWorth}}</p>
+<style>
+    table {
+      text-align: left;
+      padding-bottom: 15px;
+      padding-left: 15px;
+      padding-right: 15px;
+      width: 100%;
+      height: 200px;
+  
+    }
+  
+    th, td {
+      text-align: left;
+      border-bottom: 2px dotted #ddd;
+      border-spacing: 1px;
+      padding-left: 20px;
+      padding: 5px;
+    }
+  
+    td:hover {
+      color: dodgerblue
+    }
+    
+    .button {
+        background-color: dodgerblue;
+        border: none;
+        color: white;
+        padding: 5px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        border-radius: 60px;
+    }
+  </style>
 
-    {% for asset in assets %}
-        <p>{{asset.value}}</p>
-    {% endfor %}
-    {% for liability in liabilities %}
-        <p>{{liability.value}}</p>
-    {% endfor %}
-    {% for recurring in recurringItems %}
-        <p>{{recurring.cost}}</p>
-    {% endfor %}
+    <h3 style="padding-top: 50px;">{{user.username}} Summary</h3>
+
+    <table>
+        <tr>
+            <th><h5>Net Worth Breakdown</h5></th>
+            <th></th>
+            <th></th>
+          </tr>
+        <tr>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Value</th>
+        </tr>
+        <tr>   
+            <td>Asset</td>
+            <td>Cash</td>
+            <td>${{cash}}</td>
+            </td>
+        </tr>
+        {% for asset in assets %}
+        <tr>   
+            <td>Asset</td>
+            <td>{{asset.name}}</td>
+            <td>${{asset.value}}</td>
+            </td>
+        </tr>
+        {% endfor %}
+        {% for liability in liabilities %}
+        <tr>   
+            <td>Liability</td>
+            <td>{{liability.name}}</td>
+            <td>(${{liability.value}})</td>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr>   
+            <td><strong>NET WORTH</strong></td>
+            <td></td>
+            <td>${{netWorth}}</td>
+            </td>
+        </tr>
+    
+    </table>
 {% endblock %}
