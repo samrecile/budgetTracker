@@ -52,7 +52,6 @@ def index(request):
             else:
                 self.negativeSum = False
 
-
     # list to append monthSummary objects
     monthObjects = []
 
