@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'crispy_forms',
     'rest_framework',
+    'restApp.apps.RestappConfig'
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'test',
         'USER': 'postgres',
-        'PASSWORD': '',
+        'PASSWORD': 'Sjr757474$',
         'HOST': 'localhost',
         'PORT': '5432',
     }
