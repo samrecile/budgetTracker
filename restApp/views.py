@@ -10,7 +10,7 @@ from main.serializers import *
 class indexViewSet(viewsets.ModelViewSet):
     queryset = daily.objects.all()
     serializer_class = dailySerializer
-
+    # new view
     #permission_classes = [permissions.IsAuthenticatedOrReadOnly,
      #                     IsOwnerOrReadOnly]
 
