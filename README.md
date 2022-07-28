@@ -26,4 +26,4 @@ Project link: https://github.com/samrecile/budgetTracker
 
 ## Acknowledgments & Resources
 -https://docs.djangoproject.com/en/4.0/
--https://www.youtube.com/c/DennisIvy
+
